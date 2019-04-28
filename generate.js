@@ -1,17 +1,21 @@
 const request = require('request');
 const fs = require('fs');
-const completionsStyle = 0; // sublime text
+const completionsStyle = process.argv[2] ? Number(process.argv[2]) : 0;
 const startDate = new Date();
 
 const patternStyle = [
-	'{\n	"scope": "source.lua",\n\n	"completions":\n	[\n%s	]\n}'
+	'{\n	"scope": "source.lua",\n\n	"completions":\n	[\n%s	]\n}',
+	'{\n%s\n}',
+	"'.source.lua':\n%s"
 ]
 
 const itemStyle = [
-	'		{ "trigger": "%nativeName", "contents": "%nativeName(%nativeArgs)" }'
+	'		{ "trigger": "%nativeName", "contents": "%nativeName(%nativeArgs)" },',
+	'	"%nativeName": {\n		"prefix": "%nativeName",\n		"body": [\n			"%nativeName(%nativeArgs)"\n		]\n	},',
+	"  '%nativeName':\n    'prefix': '%nativeName'\n    'body': '%nativeName(%nativeArgs)'"
 ]
 
-const completionsName = ['fivem.sublime-completions']
+const completionsName = ['fivem.sublime-completions', 'lua.json', 'snippets.cson']
 
 request('https://runtime.fivem.net/doc/natives.json', function (err, response, content) {
 	if (err || response.statusCode != 200) return console.log('fail');;
@@ -38,12 +42,12 @@ request('https://runtime.fivem.net/doc/natives.json', function (err, response, c
 			}
 
 			nativeStr = nativeStr.replace(/%nativeArgs/g, paramStr);
-			_strCompletions += nativeStr + ",\n";
+			_strCompletions += nativeStr + "\n";
 		}
 	}
 
 	fs.writeFile('completions/' + completionsName[completionsStyle], pattern.replace(/%s/g, _strCompletions), err => {
 		if (err) return console.error(err)
-		console.info('Success in: %dms!', new Date() - startDate)
+		console.info('Done in: %dms!', new Date() - startDate)
 	});
 });
