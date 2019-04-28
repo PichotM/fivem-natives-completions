@@ -12,5 +12,4 @@ You need to specify which kind of completions you want.
 - 2 -> Atom
 
 # Supported softwares
-Sublime Text 3 is the only coding software supported.
-A new version will be soonly released for VS Code, Atom ...
+Sublime Text 3, VS Code and Atom are the only coding software supported.
